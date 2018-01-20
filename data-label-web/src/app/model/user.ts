@@ -1,9 +1,9 @@
 export class User {
-  public id;
-  public email;
-  public password;
-  public firstname;
-  public lastname;
-  public admin;
-  public token;
+  public id: string;
+  public email: string;
+  public password: string;
+  public firstname: string;
+  public lastname: string;
+  public admin: boolean;
+  public token: string;
 }

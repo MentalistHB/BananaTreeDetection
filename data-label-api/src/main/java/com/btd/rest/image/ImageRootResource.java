@@ -27,7 +27,7 @@ public class ImageRootResource {
 	@Inject
 	ImageService imageService;
 
-	@RequestMapping(path=ApiConstant.IMAGE_COLLECTION_PATH, method = RequestMethod.POST)
+	@RequestMapping(path = ApiConstant.IMAGE_COLLECTION_PATH, method = RequestMethod.POST)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Image mark(@PathVariable("token") String token, @RequestBody Image image) throws IOException {
@@ -35,14 +35,14 @@ public class ImageRootResource {
 		return imageService.mark(image, token);
 	}
 
-	@RequestMapping(path=ApiConstant.IMAGE_COLLECTION_PATH, method = RequestMethod.GET)
+	@RequestMapping(path = ApiConstant.IMAGE_COLLECTION_PATH, method = RequestMethod.GET)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Image pick(@PathVariable("token") String token) {
 
 		return imageService.pick_image(token);
 	}
 
-	@RequestMapping(path=ApiConstant.IMAGE_COLLECTION_PATH + "/all", method = RequestMethod.GET)
+	@RequestMapping(path = ApiConstant.IMAGE_COLLECTION_PATH + "/all", method = RequestMethod.GET)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Image> listByCenter(@RequestParam("center") String center, @PathVariable("token") String token) {
 

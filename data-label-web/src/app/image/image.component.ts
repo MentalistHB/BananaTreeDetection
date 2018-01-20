@@ -22,13 +22,6 @@ export class ImageComponent extends LockComponent implements OnInit {
 
   @ViewChild('imgMap')
   imgMap: ImgMapComponent;
-  x: number;
-  y: number;
-  radius: number;
-
-  width_parent: number;
-  height_parent: number;
-
 
   image: Image;
   markedImage: Image;
@@ -40,12 +33,19 @@ export class ImageComponent extends LockComponent implements OnInit {
   clientX = 0;
   clientY = 0;
 
+  width_parent: number;
+  height_parent: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+
   Math: any;
 
   markForm: FormGroup;
 
   constructor(public _formBuilder: FormBuilder, public _imageService: ImageService, public route: ActivatedRoute,
-              public router: Router, private toastyService: ToastyService, private toastyConfig: ToastyConfig) {
+              public router: Router, private toastyService: ToastyService) {
     super(route, router);
 
     this.server = AppConstant.server_file;
@@ -66,14 +66,12 @@ export class ImageComponent extends LockComponent implements OnInit {
         this.image = Object2Image.apply(responsePick);
         this.url_image = this.server + this.image.path_remote;
         this.url_parent = this.server + this.image.parent_remote;
-        this.x = this.image.x_parent + this.image.width / 2;
-        this.y = this.image.y_parent + this.image.height / 2;
-        this.radius = this.image.width / 2;
-
         this.width_parent = this.image.width_parent;
         this.height_parent = this.image.height_parent;
-
-        console.log(this.x, this.y, this.radius, this.width_parent, this.height_parent);
+        this.x = this.image.x_parent;
+        this.y = this.image.y_parent;
+        this.width = this.image.width;
+        this.height = this.image.height;
       },
       responseLoginErrCode => {
         this.addToast('Error', responseLoginErrCode.error, 'error');

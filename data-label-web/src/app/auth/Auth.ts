@@ -38,6 +38,13 @@ export class Auth {
     const firstname = sessionStorage.getItem('user.firstname');
     const lastname = sessionStorage.getItem('user.lastname');
     const admin = sessionStorage.getItem('user.admin');
+
+    let adminVal;
+    if (admin === 'true') {
+      adminVal = true;
+    } else {
+      adminVal = false;
+    }
     const token = sessionStorage.getItem('user.token');
 
     this.user = {
@@ -46,7 +53,7 @@ export class Auth {
       password: '',
       firstname: firstname,
       lastname: lastname,
-      admin: admin,
+      admin: adminVal,
       token: token,
     };
 

@@ -33,7 +33,6 @@ public class AuthRootResource {
 	}
 
 	@RequestMapping(path = ApiConstant.USER_LOGOUT_PATH, method = RequestMethod.DELETE)
-	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void logout(@PathVariable("token") String token) {
 		userService.logout(token);

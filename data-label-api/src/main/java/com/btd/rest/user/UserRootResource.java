@@ -19,14 +19,13 @@ import com.btd.rest.ApiConstant;
 import com.btd.service.UserService;
 
 @RestController
-@RequestMapping(ApiConstant.USER_COLLECTION_PATH)
 @CrossOrigin(origins = "*")
 public class UserRootResource {
 
 	@Inject
 	UserService userService;
 
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(path = ApiConstant.USER_COLLECTION_PATH, method = RequestMethod.POST)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User create(@PathVariable("token") String token, @RequestBody User user) {
@@ -34,7 +33,7 @@ public class UserRootResource {
 		return userService.create(user, token);
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(path = ApiConstant.USER_COLLECTION_PATH, method = RequestMethod.GET)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> list(@PathVariable("token") String token) {
 

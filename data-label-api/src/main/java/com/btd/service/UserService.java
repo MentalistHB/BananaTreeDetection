@@ -38,8 +38,6 @@ public class UserService {
 	 */
 	public List<User> list(String token) {
 
-		lock(token);
-
 		return userRepository.findAll();
 	}
 
@@ -61,6 +59,14 @@ public class UserService {
 		}
 
 		return user;
+	}
+
+	public User findOne(String userId, String token) {
+
+		lock(token);
+
+		return get(userId);
+
 	}
 
 	/**
@@ -119,17 +125,23 @@ public class UserService {
 	 * @return
 	 * 
 	 */
-	public User update(User update) {
+	public User update(User update, String userId, String token) {
+
+		lock(token);
 
 		int count = userRepository.countByEmail(update.getEmail().toLowerCase());
-		User user = userRepository.findByEmail(update.getEmail());
+		User existing = userRepository.findByEmail(update.getEmail());
 
-		if ((count > 0) && (!user.getEmail().toLowerCase().equals(update.getEmail().toLowerCase()))) {
+		if ((count > 0) && (!existing.getEmail().toLowerCase().equals(update.getEmail().toLowerCase()))) {
 			throw new BadRequestException();
 		}
 
-		update.setId(user.getId());
+		update.setId(existing.getId());
 		update.setEmail(update.getEmail().toLowerCase());
+		update.setToken(existing.getToken());
+		update.setCreateAt(existing.getCreateAt());
+		update.setCreator(existing.getCreator());
+		update.setPassword(existing.getPassword());
 
 		return userRepository.save(update);
 	}

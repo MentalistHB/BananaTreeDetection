@@ -20,6 +20,7 @@ import {CommonModule} from '@angular/common';
 import {ImgMapComponent} from 'ng2-img-map';
 import {StatsComponent} from './stats/stats.component';
 import {ToastyModule} from 'ng2-toasty';
+import {UserEditComponent} from './user-edit/user-edit.component';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import {ToastyModule} from 'ng2-toasty';
     routingComponents,
     UserFormComponent,
     UserLoginComponent,
+    UserEditComponent,
     LockComponent,
     UserLogoutComponent,
     ImageComponent,

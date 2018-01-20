@@ -1,27 +1,25 @@
 import {Component, OnInit} from '@angular/core';
-import {Auth} from '../auth/Auth';
-import {LockComponent} from '../lock/lock.component';
-import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {User} from '../model/user';
+import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from '../user.service';
-import {Object2User} from '../utils/Object2User';
-import {Observable, Subscription} from '../../../node_modules/rxjs';
 import {ToastData, ToastOptions, ToastyService} from 'ng2-toasty';
+import {Auth} from '../auth/Auth';
+import {User} from '../model/user';
+import {Object2User} from '../utils/Object2User';
+import {LockComponent} from '../lock/lock.component';
+import {Observable, Subscription} from '../../../node_modules/rxjs';
 
 @Component({
-  selector: 'app-user',
-  templateUrl: './user.component.html',
-  styleUrls: ['./user.component.css']
+  selector: 'app-user-edit',
+  templateUrl: './user-edit.component.html',
+  styleUrls: ['./user-edit.component.css']
 })
-export class UserComponent extends LockComponent implements OnInit {
+export class UserEditComponent extends LockComponent implements OnInit {
 
-  title: string;
-  userCreateForm: FormGroup;
+  userEditForm: FormGroup;
   user: User;
-  users: any;
-  admin = false;
-  createdUser: User;
+  userId: string;
+  userToEdit: User;
 
   constructor(public _formBuilder: FormBuilder, public _userService: UserService, public route: ActivatedRoute,
               public router: Router, private toastyService: ToastyService) {
@@ -30,17 +28,27 @@ export class UserComponent extends LockComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.userId = this.route.snapshot.params['id'];
 
-    this.userCreateForm = this._formBuilder.group({
-      email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]' +
-        '(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$')]],
+
+    this.userEditForm = this._formBuilder.group({
+      email: ['', [Validators.required, Validators.minLength(5)]],
       firstname: [''],
       lastname: [''],
       admin: [false]
     });
 
-    this._userService.list(this.user.token).subscribe(responseListUser => {
-        this.users = responseListUser;
+    this._userService.get(this.userId, this.user.token).subscribe(responseGetUser => {
+        this.userToEdit = Object2User.apply(responseGetUser);
+
+        this.userEditForm = this._formBuilder.group({
+          email: [this.userToEdit.email, [Validators.required, Validators.pattern('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]' +
+            '(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$')]],
+          firstname: [this.userToEdit.firstname],
+          lastname: [this.userToEdit.lastname],
+          admin: [this.userToEdit.admin]
+        });
+
       },
       responseLoginErrCode => {
         console.log(responseLoginErrCode);
@@ -49,26 +57,27 @@ export class UserComponent extends LockComponent implements OnInit {
 
   submit() {
     const user = {
-      email: this.userCreateForm.value.email,
-      firstname: this.userCreateForm.value.firstname,
-      lastname: this.userCreateForm.value.lastname,
-      admin: this.userCreateForm.value.admin
+      email: this.userEditForm.value.email,
+      firstname: this.userEditForm.value.firstname,
+      lastname: this.userEditForm.value.lastname,
+      admin: this.userEditForm.value.admin
     };
 
-    this._userService.create(user, this.user.token).subscribe(responseCreateUser => {
-        this.createdUser = Object2User.apply(responseCreateUser);
+    this._userService.edit(user, this.userToEdit.id, this.user.token).subscribe(responseEditUser => {
+        this.userToEdit = Object2User.apply(responseEditUser);
 
-        this.addToast('Success!', 'The user ' + this.createdUser.email + ' has been created.', 'success');
+        this.addToast('Success!', 'The user ' + this.userToEdit.email + ' has been updated.', 'success');
 
-        this.userCreateForm = this._formBuilder.group({
-          email: ['', [Validators.required, Validators.minLength(5)]],
-          firstname: [''],
-          lastname: [''],
-          admin: [false]
+        this.userEditForm = this._formBuilder.group({
+          email: [this.userToEdit.email, [Validators.required, Validators.pattern('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]' +
+            '(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$')]],
+          firstname: [this.userToEdit.firstname],
+          lastname: [this.userToEdit.lastname],
+          admin: [this.userToEdit.admin]
         });
       },
       responseLoginErrCode => {
-        this.addToast('Error!', 'The user ' + this.userCreateForm.value.email + ' couldn\'t been created.', 'error');
+        this.addToast('Error!', 'The user ' + this.userEditForm.value.email + ' couldn\'t been updated.', 'error');
         console.log(responseLoginErrCode);
       });
 
@@ -127,7 +136,4 @@ export class UserComponent extends LockComponent implements OnInit {
     }
   }
 
-  onSelect(userId: string) {
-    this.router.navigate(['/users', userId]);
-  }
 }
