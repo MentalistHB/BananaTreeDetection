@@ -1,0 +1,26 @@
+<nav class="navbar navbar-inverse navbar-fixed-bottom" id="navbar">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">BTD - Data Label</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li><a href="#" routerLink="/" routerLinkActive="active">Home</a></li>
+        <li><a href="#" routerLink="/images" routerLinkActive="active">Images</a></li>
+        <li><a href="#" routerLink="/users/stats" routerLinkActive="active">Stats</a></li>
+        <li><a href="#" routerLink="/users" routerLinkActive="active">Users</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#" routerLink="/users/logout" routerLinkActive="active"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div id="page_content" class="">
+  <router-outlet></router-outlet>
+</div>

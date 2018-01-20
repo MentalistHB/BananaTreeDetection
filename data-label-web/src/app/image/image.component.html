@@ -1,0 +1,36 @@
+<div class="row">
+  <div class="col-md-1">
+    <svg width="5cm" height="1cm" version="1.1"
+         xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
+      <image [attr.xlink:href]="url_image" x="0" y="0" (mouseenter)="onEvent($event)" (click)="pickPixel()"
+             (mouseleave)="onEvent($event)"
+             (mousemove)="coordinates($event)"
+             on-click="onEvent($event)"
+             on-dblclick="onEvent($event)"
+             on-contextmenu="onEvent($event)" id="crop"/>
+    </svg>
+    <p>x: {{clientX}}, y: {{clientY}}</p>
+    <form [formGroup]="markForm" (ngSubmit)="submit()">
+      <input type="number" id="x" formControlName="x">
+      <input type="number" id="y"  formControlName="y">
+      <label for="center">Center? </label>
+      <input type="checkbox" id="center" formControlName="center">
+      <button type="submit" class="btn btn-success" [disabled]="!markForm.valid" >Submit</button>
+    </form>
+    <button class="btn btn-primary" (click)="ngOnInit()">Pick another image</button>
+    <p>
+      Please click on <b>"Pick another image"</b> if you don't know which class it is or where the center is.
+    </p>
+    <p>
+      Don't worry about it!
+    </p>
+  </div>
+  <div class="col-md-push-1 col-md-10" id="image_parent">
+    <svg version="1.1" [attr.width]="width_parent" [attr.height]="height_parent"
+         xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" id="image">
+      <image [attr.xlink:href]="url_parent" [attr.width]="width_parent" [attr.height]="height_parent"/>
+      <circle [attr.cx]="x" [attr.cy]="y" [attr.r]="radius" stroke="red" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+  <ng2-toasty [position]="'bottom-center'"></ng2-toasty>
+</div>

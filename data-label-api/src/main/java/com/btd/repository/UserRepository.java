@@ -1,9 +1,12 @@
 package com.btd.repository;
 
+import javax.inject.Named;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.btd.rest.model.User;
+import com.btd.model.User;
 
+@Named
 public interface UserRepository extends JpaRepository<User, String> {
 
 	public User findByEmail(String email);

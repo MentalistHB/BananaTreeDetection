@@ -1,6 +1,7 @@
-package com.btd.rest.model;
+package com.btd.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ public class User implements Serializable {
 	private String email;
 	private String password;
 	private String token;
+	private Date createAt;
 	private boolean admin;
 
 	@ManyToOne
@@ -101,6 +103,14 @@ public class User implements Serializable {
 
 	public void setCreator(User creator) {
 		this.creator = creator;
+	}
+
+	public Date getCreateAt() {
+		return createAt;
+	}
+
+	public void setCreateAt(Date createAt) {
+		this.createAt = createAt;
 	}
 
 }

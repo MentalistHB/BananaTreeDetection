@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
@@ -12,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.btd.model.User;
 import com.btd.repository.UserRepository;
 import com.btd.rest.ApiConstant;
-import com.btd.rest.model.User;
 import com.btd.transfer.UserLoginTO;
 
 @Service
@@ -23,6 +24,9 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Inject
+	public ImageService imageService;
 
 	/**
 	 * list all users
@@ -51,6 +55,26 @@ public class UserService {
 	public User get(String userId) {
 
 		User user = userRepository.findOne(userId);
+
+		if (user == null) {
+			throw new NotFoundException();
+		}
+
+		return user;
+	}
+
+	/**
+	 * get user by token
+	 *
+	 * @param userId
+	 *
+	 * @return
+	 * 
+	 * 		throws NotFoundException if the user name is not found
+	 */
+	public User getByToken(String token) {
+
+		User user = userRepository.findByToken(token);
 
 		if (user == null) {
 			throw new NotFoundException();
