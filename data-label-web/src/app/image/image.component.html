@@ -18,11 +18,14 @@
       <button type="submit" class="btn btn-success" [disabled]="!markForm.valid" >Submit</button>
     </form>
     <button class="btn btn-primary" (click)="ngOnInit()">Pick another image</button>
-    <p>
-      Please click on <b>"Pick another image"</b> if you don't know which class it is or where the center is.
+    <br/>
+    <br/>
+    <p class="text-justify">
+      <b>Caution</b>: Please click on <b>"Pick another image"</b> if you don't know which class it is or where the center is.
     </p>
-    <p>
-      Don't worry about it!
+    <p class="text-justify">
+      Don't worry if you make a mistake. Just continue to annotate.<br/>
+      Your errors will be handled by the administrator.
     </p>
   </div>
   <div class="col-md-push-1 col-md-10" id="image_parent">
