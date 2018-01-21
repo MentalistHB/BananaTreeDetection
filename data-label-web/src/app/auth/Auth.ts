@@ -28,7 +28,7 @@ export class Auth {
     sessionStorage.setItem('user.email', user.email);
     sessionStorage.setItem('user.firstname', user.firstname);
     sessionStorage.setItem('user.lastname', user.lastname);
-    sessionStorage.setItem('user.admin', user.admin);
+    sessionStorage.setItem('user.admin', String(user.admin));
     sessionStorage.setItem('user.token', user.token);
   }
 
