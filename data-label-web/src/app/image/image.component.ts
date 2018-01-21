@@ -9,7 +9,7 @@ import {User} from '../model/user';
 import {AppConstant} from '../AppConstant';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ImgMapComponent} from 'ng2-img-map';
-import {ToastData, ToastOptions, ToastyConfig, ToastyService} from 'ng2-toasty';
+import {ToastData, ToastOptions, ToastyService} from 'ng2-toasty';
 import {Observable, Subscription} from 'rxjs/Rx';
 
 @Component({
@@ -42,9 +42,13 @@ export class ImageComponent extends LockComponent implements OnInit {
 
   Math: any;
 
-  markForm: FormGroup;
+  fill = 'none';
+  x_template = 0;
+  y_template = 0;
+  center = false;
 
-  constructor(public _formBuilder: FormBuilder, public _imageService: ImageService, public route: ActivatedRoute,
+
+  constructor(public _imageService: ImageService, public route: ActivatedRoute,
               public router: Router, private toastyService: ToastyService) {
     super(route, router);
 
@@ -54,11 +58,10 @@ export class ImageComponent extends LockComponent implements OnInit {
 
   ngOnInit() {
     this.pick(this.user.token);
-    this.markForm = this._formBuilder.group({
-      x: [''],
-      y: [''],
-      center: [false]
-    });
+    this.fill = 'none';
+    this.x_template = 0;
+    this.y_template = 0;
+    this.center = false;
   }
 
   pick(token: string) {
@@ -88,19 +91,20 @@ export class ImageComponent extends LockComponent implements OnInit {
     this.clientY = event.clientY;
   }
 
-  pickPixel(ref: ElementRef) {
-    this.markForm.controls['x'].setValue(this.clientX);
-    this.markForm.controls['y'].setValue(this.clientY);
-    this.markForm.controls['center'].setValue(true);
+  pickPixel(xPicked: number, yPicked: number) {
+    this.fill = 'red';
+    this.x_template = xPicked;
+    this.y_template = yPicked;
+    this.center = true;
   }
 
 
   submit() {
     const markedImage = {
       id: '',
-      center: this.markForm.value.center,
-      x: this.markForm.value.x,
-      y: this.markForm.value.y,
+      center: this.center,
+      x: this.x_template,
+      y: this.y_template,
       x_parent: this.image.x_parent,
       y_parent: this.image.y_parent,
       width: this.image.width,
@@ -179,5 +183,12 @@ export class ImageComponent extends LockComponent implements OnInit {
         this.toastyService.warning(toastOptions);
         break;
     }
+  }
+
+  resetTemplate() {
+    this.fill = 'none';
+    this.x_template = 0;
+    this.y_template = 0;
+    this.center = false;
   }
 }

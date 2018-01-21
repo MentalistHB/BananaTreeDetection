@@ -2,27 +2,24 @@
   <div class="col-md-1">
     <svg width="5cm" height="1cm" version="1.1"
          xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
-      <image [attr.xlink:href]="url_image" x="0" y="0" (mouseenter)="onEvent($event)" (click)="pickPixel()"
+      <image [attr.xlink:href]="url_image" x="0" y="0" (mouseenter)="onEvent($event)" (click)="pickPixel(clientX, clientY)"
              (mouseleave)="onEvent($event)"
              (mousemove)="coordinates($event)"
              on-click="onEvent($event)"
              on-dblclick="onEvent($event)"
              on-contextmenu="onEvent($event)" id="crop"/>
+      <circle [attr.cx]="x_template" [attr.cy]="y_template" [attr.fill]="fill" r="3"/>
     </svg>
-    <p>x: {{clientX}}, y: {{clientY}}</p>
-    <form [formGroup]="markForm" (ngSubmit)="submit()">
-      <input type="number" id="x" formControlName="x">
-      <input type="number" id="y"  formControlName="y">
-      <label for="center">Center? </label>
-      <input type="checkbox" id="center" formControlName="center">
-      <button type="submit" class="btn btn-success" [disabled]="!markForm.valid" >Submit</button>
-    </form>
-    <button class="btn btn-primary" (click)="ngOnInit()">Pick another image</button>
+    <p *ngIf="center">center at posotion ({{x_template}},{{y_template}})</p>
+    <p *ngIf="!center">No center!</p>
+    <button class="btn btn-danger" (click)="resetTemplate()" data-toggle="tooltip" data-placement="right" title="Reset to no center">Reset</button>
+    <button class="btn btn-success" (click)="submit()" data-toggle="tooltip" data-placement="right" title="Confirm the selection">Confirm</button>
+    <button class="btn btn-primary" (click)="ngOnInit()" data-toggle="tooltip" data-placement="right" title="Leave this picture and take another one">Pick another image</button>
     <br/>
     <br/>
     <p class="text-justify text-info">
-      Please click on <b>"Pick another image"</b> if you don't know which class it is or where the center is.<br/>
-      There is a red square on the whole picture to give you an overview about where the template is on the farm.
+      Please click on <b>"Pick another image"</b> if you can't make a choice.<br/>
+      There is a red square on the big picture right to give you an overview about where the template is on the farm.
     </p>
     <p class="text-justify text-warning">
       Don't worry if you make a mistake. Just continue to annotate.<br/>
