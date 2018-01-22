@@ -192,7 +192,7 @@ public class ImageService {
 			Date currentDate = new Date();
 			diff = Math.abs(start.getTime() - currentDate.getTime());
 		}
-		return null;
+		return new Image();
 	}
 
 	/**
