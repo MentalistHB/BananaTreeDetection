@@ -3,6 +3,7 @@ package com.btd.service;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.Date;
 
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
@@ -113,6 +114,7 @@ public class UserService {
 		create.setEmail(create.getEmail().toLowerCase());
 		create.setPassword(generateString(ApiConstant.PWD_LENGTH));
 		create.setCreator(creator);
+		create.setCreateAt(new Date());
 
 		return userRepository.save(create);
 	}

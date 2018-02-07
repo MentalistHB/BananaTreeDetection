@@ -22,4 +22,6 @@ public interface ImageRepository extends JpaRepository<Image, String> {
 	List<Image> findByUserId(String userId);
 
 	List<Image> findByCenterAndUserIdOrderByMarkedDateAsc(boolean center, String userId);
+
+	Image findFirstByUserIdAndReviewedOrderByMarkedDateAsc(String userId, boolean reviewed);
 }

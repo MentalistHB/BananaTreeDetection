@@ -14,8 +14,16 @@ export class ImageService {
     return this._http.get(this._userService.user_url + '/' + token + '/images');
   }
 
+  pickToReview(userId: string, token: string) {
+    return this._http.get(this._userService.user_url + '/' + token + '/images/reviews/' + userId + '/images');
+  }
+
   mark(image: Image, token: string) {
     return this._http.post(this._userService.user_url + '/' + token + '/images', image);
+  }
+
+  review(userId: string, imageId: string, token: string, image: Image) {
+    return this._http.post(this._userService.user_url + '/' + token + '/images/reviews/' + userId + '/images/' + imageId, image);
   }
 
   list(token: string, center: string) {

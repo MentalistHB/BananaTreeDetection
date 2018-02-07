@@ -226,6 +226,81 @@ public class ImageService {
 		return imageRepository.findByCenterAndUserIdOrderByMarkedDateAsc(centerValue, user.getId());
 	}
 
+	/**
+	 * pick an image to review
+	 *
+	 * @param
+	 *
+	 * @return
+	 * 
+	 */
+	public Image pickToReview(String userId, String token) {
+
+		User reviewer = userRepository.findByToken(token);
+
+		// check if the reviewer is connected
+		if (reviewer == null) {
+			throw new NotFoundException();
+		}
+
+		User user = userRepository.findOne(userId);
+
+		// check if the user exists
+		if (user == null) {
+			throw new NotFoundException();
+		}
+
+		Image image = imageRepository.findFirstByUserIdAndReviewedOrderByMarkedDateAsc(user.getId(), false);
+
+		return image;
+	}
+
+	/**
+	 * review an image to review
+	 *
+	 * @param
+	 *
+	 * @return
+	 * 
+	 */
+	public Image review(String imageId, String token, Image update) {
+
+		User reviewer = userRepository.findByToken(token);
+
+		// check if the reviewer is connected
+		if (reviewer == null) {
+			throw new NotFoundException();
+		}
+
+		Image image = imageRepository.findOne(imageId);
+
+		// check if the image exists
+		if (image == null) {
+			throw new NotFoundException();
+		}
+
+		if (!update.isCenter()) {
+			update.setX(-1);
+			update.setY(-1);
+		}
+
+		if (update.isCenter() == image.isCenter() && update.getX() == image.getX() && update.getY() == image.getY()) {
+			update.setChanged(false);
+		} else {
+			update.setChanged(true);
+		}
+
+		update.setId(image.getId());
+		update.setPrevious_x(image.getX());
+		update.setPrevious_y(image.getY());
+		update.setReviewed(true);
+		update.setReviewedDate(new Date());
+		update.setReviewer(reviewer);
+		update.setUser(image.getUser());
+
+		return imageRepository.save(update);
+	}
+
 	public int generateIntRandom(int min, int max) {
 
 		Random r = new Random();

@@ -30,6 +30,16 @@ public class Image implements Serializable {
 	private String path_remote;
 	private Date markedDate;
 
+	// review attributes
+
+	private boolean reviewed;
+	@ManyToOne
+	private User reviewer;
+	private Date reviewedDate;
+	private int previous_x;
+	private int previous_y;
+	private boolean changed;
+
 	@ManyToOne
 	private User user;
 
@@ -175,6 +185,54 @@ public class Image implements Serializable {
 
 	public void setHeight_parent(int height_parent) {
 		this.height_parent = height_parent;
+	}
+
+	public boolean isReviewed() {
+		return reviewed;
+	}
+
+	public void setReviewed(boolean reviewed) {
+		this.reviewed = reviewed;
+	}
+
+	public User getReviewer() {
+		return reviewer;
+	}
+
+	public void setReviewer(User reviewer) {
+		this.reviewer = reviewer;
+	}
+
+	public Date getReviewedDate() {
+		return reviewedDate;
+	}
+
+	public void setReviewedDate(Date reviewedDate) {
+		this.reviewedDate = reviewedDate;
+	}
+
+	public int getPrevious_x() {
+		return previous_x;
+	}
+
+	public void setPrevious_x(int previous_x) {
+		this.previous_x = previous_x;
+	}
+
+	public int getPrevious_y() {
+		return previous_y;
+	}
+
+	public void setPrevious_y(int previous_y) {
+		this.previous_y = previous_y;
+	}
+
+	public boolean isChanged() {
+		return changed;
+	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
 	}
 
 	public String toString() {

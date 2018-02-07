@@ -17,6 +17,9 @@ public class ApiConstant {
 	public static final String IMAGE_COLLECTION_PATH = USER_COLLECTION_PATH + "/images";
 	public static final String IMAGE_ITEM_PATH = IMAGE_COLLECTION_PATH + "/{imageId}";
 
+	public static final String IMAGE_REVIEW_COLLECTION_PATH = IMAGE_COLLECTION_PATH + "/reviews/{userId}/images";
+	public static final String IMAGE_REVIEW_ITEM_PATH = IMAGE_REVIEW_COLLECTION_PATH + "/{imageId}";
+
 	public static final String SORT_ASC = "ASC";
 	public static final String SORT_DESC = "DESC";
 

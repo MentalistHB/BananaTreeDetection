@@ -21,6 +21,7 @@ import {ImgMapComponent} from 'ng2-img-map';
 import {StatsComponent} from './stats/stats.component';
 import {ToastyModule} from 'ng2-toasty';
 import {UserEditComponent} from './user-edit/user-edit.component';
+import { ReviewComponent } from './review/review.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import {UserEditComponent} from './user-edit/user-edit.component';
     UserLogoutComponent,
     ImageComponent,
     ImgMapComponent,
-    StatsComponent
+    StatsComponent,
+    ReviewComponent
   ],
   imports: [
     BrowserModule,

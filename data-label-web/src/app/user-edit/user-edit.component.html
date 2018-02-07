@@ -31,6 +31,7 @@
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-success" [disabled]="!userEditForm.valid" >Update</button>
+        <button class="btn btn-warning" (click)="review(userToEdit.id)">Review</button>
       </div>
     </div>
   </form>

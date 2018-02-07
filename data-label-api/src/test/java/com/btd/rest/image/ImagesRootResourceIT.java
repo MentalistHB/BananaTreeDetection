@@ -1,4 +1,4 @@
-package com.btd.rest.Image;
+package com.btd.rest.image;
 
 import java.io.File;
 import java.util.UUID;
@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotEquals;
 
 @RunWith(SpringRunner.class) // 1
 @SpringBootTest(classes = BTDRestApiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ImageRootResourceIT extends ItBase {
+public class ImagesRootResourceIT extends ItBase {
 
 	@Autowired
 	private UserRepository userRepository;

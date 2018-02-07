@@ -136,4 +136,8 @@ export class UserEditComponent extends LockComponent implements OnInit {
     }
   }
 
+  review(userId){
+    this.router.navigate(['/users/review', userId]);
+  }
+
 }
