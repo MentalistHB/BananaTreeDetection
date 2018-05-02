@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import random
 import matplotlib.image as mpimg
 import os
+from scipy.spatial import distance_matrix
 
 
 class Detector:
@@ -51,6 +52,9 @@ class Detector:
         regressor_file = open(self.regressor_model_path, 'r')
         self.regressor = model_from_json(regressor_file.read())
         self.regressor.load_weights(self.regressor_weights_path)
+
+        # keep predictions
+        self.predicted = None
 
     def recognize(self):
 
@@ -169,6 +173,10 @@ class Detector:
             x = max_param['model'].cluster_centers_[:, 0]
             y = max_param['model'].cluster_centers_[:, 1]
 
+            # save the prediction
+
+            self.predicted = np.rint(max_param['model'].cluster_centers_)
+
             print('Number of tree = {}'.format(max_param['n_core_samples']))
 
             plt.plot(x, y, 'r.', markersize=7)
@@ -182,8 +190,90 @@ class Detector:
                     datetime.datetime.now().second,
                     self.stride,
                     self.threshold,
-                    self.padding)))
+                    self.padding)), dpi=900)
             plt.show()
+
+    def mapping(self, real=None):
+        n = real.shape[0]
+        m = self.predicted.shape[0]
+
+        # fill the distance matrix
+        D = distance_matrix(real, self.predicted)
+
+        max_number = self.w_width * self.w_height
+
+        if n < m:
+            nb_points = n
+        else:
+            nb_points = m
+
+        print(n, m, nb_points, np.max(D), np.min(D.min))
+
+        selected_real = np.zeros((nb_points, 2))
+        selected_predicted = np.zeros((nb_points, 2))
+
+        distances = list()
+
+        for i in range(nb_points):
+            r, p = np.unravel_index(D.argmin(), D.shape)
+            distances.append(D[r, p])
+            D[r, :] = float('inf')
+            D[:, p] = float('inf')
+            selected_real[i, 0] = real[r, 0]
+            selected_real[i, 1] = real[r, 1]
+            selected_predicted[i, 0] = self.predicted[p, 0]
+            selected_predicted[i, 1] = self.predicted[p, 1]
+
+        print(distances)
+
+        # average distance error
+        ade = np.array(distances).sum() / nb_points
+
+        print('Average distance error={}'.format(ade))
+
+        img = mpimg.imread(self.input_path)
+        plt.imshow(img)
+
+        plt.plot(selected_real[:, 0], selected_real[:, 1], 'y.', markersize=7)
+        plt.plot(selected_predicted[:, 0], selected_predicted[:, 1], 'r.', markersize=7)
+        for i in range(nb_points):
+            plt.plot([selected_real[i, 0], selected_predicted[i, 0]], [selected_real[i, 1], selected_predicted[i, 1]], color="blue", linewidth=1.0, linestyle="-", markersize=7)
+
+        plt.savefig(
+            os.path.join(self.output_path,
+                         'detection_mapping_{}{}{}-{}{}{}_stride-{}_threshold-{}_padding-{}.jpg'.format(
+                             datetime.datetime.now().day,
+                             datetime.datetime.now().month,
+                             datetime.datetime.now().year,
+                             datetime.datetime.now().hour,
+                             datetime.datetime.now().minute,
+                             datetime.datetime.now().second,
+                             self.stride,
+                             self.threshold,
+                             self.padding)), dpi=900)
+
+        # plot distances
+
+        plt.show()
+        plt.close()
+
+        distances = np.linalg.norm(selected_real - selected_predicted, axis=1)
+
+        plt.plot(range(distances.size), distances, color="blue", linewidth=1.0, linestyle="-", markersize=7)
+        plt.plot(int(distances.size) / 2, ade, 'g.', markersize=7)
+        plt.savefig(
+            os.path.join(self.output_path,
+                         'detection_distances_{}{}{}-{}{}{}_stride-{}_threshold-{}_padding-{}.jpg'.format(
+                             datetime.datetime.now().day,
+                             datetime.datetime.now().month,
+                             datetime.datetime.now().year,
+                             datetime.datetime.now().hour,
+                             datetime.datetime.now().minute,
+                             datetime.datetime.now().second,
+                             self.stride,
+                             self.threshold,
+                             self.padding)), dpi=900)
+        plt.show()
 
 
 def get_total_template_sliding_windows(image, width_template, stride):
