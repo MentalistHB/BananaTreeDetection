@@ -1,9 +1,8 @@
 package com.btd;
 
-import java.util.UUID;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 
 import com.btd.model.User;
@@ -11,6 +10,7 @@ import com.btd.repository.UserRepository;
 import com.btd.rest.ApiConstant;
 
 @SpringBootApplication
+@EntityScan("com.btd.model")
 public class BTDRestApiApplication {
 
 	public static void main(String[] args) {
@@ -29,7 +29,6 @@ public class BTDRestApiApplication {
 			admin.setLastname(ApiConstant.ADMIN_LASTNAME);
 			admin.setAdmin(true);
 			admin.setCreator(null);
-			admin.setId(UUID.randomUUID().toString());
 
 			userRepository.save(admin);
 

@@ -2,20 +2,30 @@ package com.btd.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class Image implements Serializable {
 	private static final long serialVersionUID = -6090769902064343427L;
 
 	@Id
-	private String id;
+	@GeneratedValue(generator = "uuid2")
+	@GenericGenerator(name = "uuid2", strategy = "uuid2")
+	@Column(columnDefinition = "uuid")
+	private UUID id;
 	private boolean center;
-	private int x;
-	private int y;
 	private int x_parent;
 	private int y_parent;
 	private int width;
@@ -29,25 +39,17 @@ public class Image implements Serializable {
 	private String path_local;
 	private String path_remote;
 	private Date markedDate;
-
-	// review attributes
-
-	private boolean reviewed;
-	@ManyToOne
-	private User reviewer;
-	private Date reviewedDate;
-	private int previous_x;
-	private int previous_y;
-	private boolean changed;
+	@OneToMany(mappedBy = "image", fetch = FetchType.EAGER)
+	private Set<Annotation> annotations = new HashSet<>();
 
 	@ManyToOne
 	private User user;
 
-	public String getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -57,22 +59,6 @@ public class Image implements Serializable {
 
 	public void setCenter(boolean center) {
 		this.center = center;
-	}
-
-	public int getX() {
-		return x;
-	}
-
-	public void setX(int x) {
-		this.x = x;
-	}
-
-	public int getY() {
-		return y;
-	}
-
-	public void setY(int y) {
-		this.y = y;
 	}
 
 	public int getWidth() {
@@ -97,6 +83,14 @@ public class Image implements Serializable {
 
 	public void setMarkedDate(Date markedDate) {
 		this.markedDate = markedDate;
+	}
+
+	public Set<Annotation> getAnnotations() {
+		return annotations;
+	}
+
+	public void setAnnotations(Set<Annotation> annotations) {
+		this.annotations = annotations;
 	}
 
 	public String getName() {
@@ -187,58 +181,10 @@ public class Image implements Serializable {
 		this.height_parent = height_parent;
 	}
 
-	public boolean isReviewed() {
-		return reviewed;
-	}
-
-	public void setReviewed(boolean reviewed) {
-		this.reviewed = reviewed;
-	}
-
-	public User getReviewer() {
-		return reviewer;
-	}
-
-	public void setReviewer(User reviewer) {
-		this.reviewer = reviewer;
-	}
-
-	public Date getReviewedDate() {
-		return reviewedDate;
-	}
-
-	public void setReviewedDate(Date reviewedDate) {
-		this.reviewedDate = reviewedDate;
-	}
-
-	public int getPrevious_x() {
-		return previous_x;
-	}
-
-	public void setPrevious_x(int previous_x) {
-		this.previous_x = previous_x;
-	}
-
-	public int getPrevious_y() {
-		return previous_y;
-	}
-
-	public void setPrevious_y(int previous_y) {
-		this.previous_y = previous_y;
-	}
-
-	public boolean isChanged() {
-		return changed;
-	}
-
-	public void setChanged(boolean changed) {
-		this.changed = changed;
-	}
-
 	public String toString() {
-		return "Center: " + center + "\n" + "x: " + x + "\n" + "y: " + y + "\n" + "x_parent: " + x_parent + "\n"
-				+ "y_parent: " + y_parent + "\n" + "width: " + width + "\n" + "height: " + height + "\n" + "stride: "
-				+ stride + "\n" + "name: " + name + "\n" + "parent: " + parent_local + "\n" + "old_url: " + path_local
-				+ "\n" + "new_url: " + path_remote + "\n" + "Marked date: " + markedDate + "\n";
+		return "Center: " + center + "\n" + "x_parent: " + x_parent + "\n" + "y_parent: " + y_parent + "\n" + "width: "
+				+ width + "\n" + "height: " + height + "\n" + "stride: " + stride + "\n" + "name: " + name + "\n"
+				+ "parent: " + parent_local + "\n" + "old_url: " + path_local + "\n" + "new_url: " + path_remote + "\n"
+				+ "Marked date: " + markedDate + "\n";
 	}
 }

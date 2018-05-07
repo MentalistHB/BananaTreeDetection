@@ -3,13 +3,20 @@ package com.btd.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
@@ -17,27 +24,33 @@ public class User implements Serializable {
 	private static final long serialVersionUID = -3174398959173053637L;
 
 	@Id
-	private String id;
+	@GeneratedValue(generator = "uuid2")
+	@GenericGenerator(name = "uuid2", strategy = "uuid2")
+	@Column(columnDefinition = "uuid")
+	private UUID id;
 	private String firstname;
 	private String lastname;
 	@NotEmpty(message = "The email must nut be empty")
 	private String email;
 	private String password;
-	private String token;
+	private UUID token;
 	private Date createAt;
 	private boolean admin;
 
 	@ManyToOne
 	private User creator;
 
-	@OneToMany
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
 	private Set<Image> images = new HashSet<>();
 
-	public String getId() {
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<Role> roles;
+
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -89,11 +102,11 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public String getToken() {
+	public UUID getToken() {
 		return token;
 	}
 
-	public void setToken(String token) {
+	public void setToken(UUID token) {
 		this.token = token;
 	}
 
@@ -111,6 +124,14 @@ public class User implements Serializable {
 
 	public void setCreateAt(Date createAt) {
 		this.createAt = createAt;
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
 	}
 
 }

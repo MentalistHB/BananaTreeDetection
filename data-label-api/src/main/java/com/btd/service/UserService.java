@@ -23,238 +23,237 @@ import com.btd.transfer.UserLoginTO;
 @Transactional
 public class UserService {
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Inject
-	public ImageService imageService;
+    @Inject
+    public ImageService imageService;
 
-	/**
-	 * list all users
-	 *
-	 * @param
-	 *
-	 * @return
-	 * 
-	 */
-	public List<User> list(String token) {
+    /**
+     * list all users
+     *
+     * @param
+     *
+     * @return
+     * 
+     */
+    public List<User> list(String token) {
 
-		return userRepository.findAll();
-	}
+        return userRepository.findAll();
+    }
 
-	/**
-	 * get user
-	 *
-	 * @param userId
-	 *
-	 * @return
-	 * 
-	 * 		throws NotFoundException if the user name is not found
-	 */
-	public User get(String userId) {
+    /**
+     * get user
+     *
+     * @param userId
+     *
+     * @return
+     * 
+     *         throws NotFoundException if the user name is not found
+     */
+    public User get(UUID userId) {
 
-		User user = userRepository.findOne(userId);
+        User user = userRepository.findOne(userId);
 
-		if (user == null) {
-			throw new NotFoundException();
-		}
+        if (user == null) {
+            throw new NotFoundException();
+        }
 
-		return user;
-	}
+        return user;
+    }
 
-	public User findOne(String userId, String token) {
+    public User findOne(UUID userId, UUID token) {
 
-		lock(token);
+        lock(token);
 
-		return get(userId);
+        return get(userId);
 
-	}
+    }
 
-	/**
-	 * get user by token
-	 *
-	 * @param userId
-	 *
-	 * @return
-	 * 
-	 * 		throws NotFoundException if the user name is not found
-	 */
-	public User getByToken(String token) {
+    /**
+     * get user by token
+     *
+     * @param userId
+     *
+     * @return
+     * 
+     *         throws NotFoundException if the user name is not found
+     */
+    public User getByToken(UUID token) {
 
-		User user = userRepository.findByToken(token);
+        User user = userRepository.findByToken(token);
 
-		if (user == null) {
-			throw new NotFoundException();
-		}
+        if (user == null) {
+            throw new NotFoundException();
+        }
 
-		return user;
-	}
+        return user;
+    }
 
-	/**
-	 * create user
-	 *
-	 * @param user
-	 *
-	 * @return
-	 * 
-	 */
-	public User create(User create, String token) {
+    /**
+     * create user
+     *
+     * @param user
+     *
+     * @return
+     * 
+     */
+    public User create(User create, UUID token) {
 
-		lock(token);
+        lock(token);
 
-		User creator = userRepository.findByToken(token);
+        User creator = userRepository.findByToken(token);
 
-		User actual = userRepository.findByEmail(create.getEmail().toLowerCase());
+        User actual = userRepository.findByEmail(create.getEmail().toLowerCase());
 
-		if (actual != null) {
-			throw new BadRequestException();
-		}
+        if (actual != null) {
+            throw new BadRequestException();
+        }
 
-		create.setId(UUID.randomUUID().toString());
-		create.setEmail(create.getEmail().toLowerCase());
-		create.setPassword(generateString(ApiConstant.PWD_LENGTH));
-		create.setCreator(creator);
-		create.setCreateAt(new Date());
+        create.setEmail(create.getEmail().toLowerCase());
+        create.setPassword(generateString(ApiConstant.PWD_LENGTH));
+        create.setCreator(creator);
+        create.setCreateAt(new Date());
 
-		return userRepository.save(create);
-	}
+        return userRepository.save(create);
+    }
 
-	/**
-	 * update user
-	 *
-	 * @param user
-	 *
-	 * @return
-	 * 
-	 */
-	public User update(User update, String userId, String token) {
+    /**
+     * update user
+     *
+     * @param user
+     *
+     * @return
+     * 
+     */
+    public User update(User update, UUID userId, UUID token) {
 
-		lock(token);
+        lock(token);
 
-		int count = userRepository.countByEmail(update.getEmail().toLowerCase());
-		User existing = userRepository.findByEmail(update.getEmail());
+        int count = userRepository.countByEmail(update.getEmail().toLowerCase());
+        User existing = userRepository.findByEmail(update.getEmail());
 
-		if ((count > 0) && (!existing.getEmail().toLowerCase().equals(update.getEmail().toLowerCase()))) {
-			throw new BadRequestException();
-		}
+        if ((count > 0) && (!existing.getEmail().toLowerCase().equals(update.getEmail().toLowerCase()))) {
+            throw new BadRequestException();
+        }
 
-		update.setId(existing.getId());
-		update.setEmail(update.getEmail().toLowerCase());
-		update.setToken(existing.getToken());
-		update.setCreateAt(existing.getCreateAt());
-		update.setCreator(existing.getCreator());
-		update.setPassword(existing.getPassword());
+        update.setId(existing.getId());
+        update.setEmail(update.getEmail().toLowerCase());
+        update.setToken(existing.getToken());
+        update.setCreateAt(existing.getCreateAt());
+        update.setCreator(existing.getCreator());
+        update.setPassword(existing.getPassword());
 
-		return userRepository.save(update);
-	}
+        return userRepository.save(update);
+    }
 
-	/**
-	 * delete user
-	 *
-	 * @param userId
-	 *
-	 * @return
-	 * 
-	 * 		throws NotFoundException if the user is not found
-	 */
-	public void delete(String userId, String token) {
+    /**
+     * delete user
+     *
+     * @param userId
+     *
+     * @return
+     * 
+     *         throws NotFoundException if the user is not found
+     */
+    public void delete(UUID userId, UUID token) {
 
-		lock(token);
+        lock(token);
 
-		User admin = userRepository.findByToken(token);
+        User admin = userRepository.findByToken(token);
 
-		if (admin.getId().equals(userId)) {
-			throw new BadRequestException();
-		}
+        if (admin.getId().equals(userId)) {
+            throw new BadRequestException();
+        }
 
-		User user = get(userId);
+        User user = get(userId);
 
-		userRepository.delete(user.getId());
-	}
+        userRepository.delete(user.getId());
+    }
 
-	/**
-	 * connect a user
-	 *
-	 * @param user
-	 *
-	 * @return
-	 * 
-	 * 		throws ForbiddenException if the email and password do not match
-	 * 
-	 */
-	public User login(UserLoginTO userLoginTO) {
+    /**
+     * connect a user
+     *
+     * @param user
+     *
+     * @return
+     * 
+     *         throws ForbiddenException if the email and password do not match
+     * 
+     */
+    public User login(UserLoginTO userLoginTO) {
 
-		User user = userRepository.findByEmailAndPassword(userLoginTO.getEmail(), userLoginTO.getPassword());
+        User user = userRepository.findByEmailAndPassword(userLoginTO.getEmail(), userLoginTO.getPassword());
 
-		if (user == null) {
-			throw new ForbiddenException();
-		}
+        if (user == null) {
+            throw new ForbiddenException();
+        }
 
-		user.setToken(UUID.randomUUID().toString());
+        user.setToken(UUID.randomUUID());
 
-		return userRepository.save(user);
-	}
+        return userRepository.save(user);
+    }
 
-	/**
-	 * disconnect a user
-	 *
-	 * @param userId
-	 *
-	 * @return
-	 * 
-	 * 		throws NotFoundException if the user is not found
-	 */
-	public void logout(String token) {
+    /**
+     * disconnect a user
+     *
+     * @param userId
+     *
+     * @return
+     * 
+     *         throws NotFoundException if the user is not found
+     */
+    public void logout(UUID token) {
 
-		User user = userRepository.findByToken(token);
+        User user = userRepository.findByToken(token);
 
-		if (user == null) {
-			throw new NotFoundException();
-		}
+        if (user == null) {
+            throw new NotFoundException();
+        }
 
-		user.setToken(null);
+        user.setToken(null);
 
-		userRepository.save(user);
-	}
+        userRepository.save(user);
+    }
 
-	public boolean isAdmin(String token) {
+    public boolean isAdmin(UUID token) {
 
-		User user = userRepository.findByToken(token);
-		if ((user == null) || (!user.isAdmin())) {
-			return false;
-		}
-		return true;
-	}
+        User user = userRepository.findByToken(token);
+        if ((user == null) || (!user.isAdmin())) {
+            return false;
+        }
+        return true;
+    }
 
-	public void lock(String token) {
-		if (!isAdmin(token)) {
-			throw new ForbiddenException();
-		}
-	}
+    public void lock(UUID token) {
+        if (!isAdmin(token)) {
+            throw new ForbiddenException();
+        }
+    }
 
-	public String generateString(int lengthChar) {
-		int i, randomNum;
-		Random r = new Random();
-		String newId = "";
-		int ascii_min_char_maj = 65;
-		int ascii_max_char_maj = 90;
-		int ascii_min_char_min = 97;
-		int ascii_max_char_min = 122;
-		int min_int = 48;
-		int max_int = 57;
-		int rd;
-		for (i = 0; i < lengthChar; i++) {
-			rd = r.nextInt((2 - 0) + 1) + 0;
-			randomNum = 0;
-			if (rd == 0)
-				randomNum = r.nextInt((ascii_max_char_maj - ascii_min_char_maj) + 1) + ascii_min_char_maj;
-			if (rd == 1)
-				randomNum = r.nextInt((ascii_max_char_min - ascii_min_char_min) + 1) + ascii_min_char_min;
-			if (rd == 2)
-				randomNum = r.nextInt((max_int - min_int) + 1) + min_int;
-			newId += (char) randomNum;
-		}
+    public String generateString(int lengthChar) {
+        int i, randomNum;
+        Random r = new Random();
+        String newId = "";
+        int ascii_min_char_maj = 65;
+        int ascii_max_char_maj = 90;
+        int ascii_min_char_min = 97;
+        int ascii_max_char_min = 122;
+        int min_int = 48;
+        int max_int = 57;
+        int rd;
+        for (i = 0; i < lengthChar; i++) {
+            rd = r.nextInt((2 - 0) + 1) + 0;
+            randomNum = 0;
+            if (rd == 0)
+                randomNum = r.nextInt((ascii_max_char_maj - ascii_min_char_maj) + 1) + ascii_min_char_maj;
+            if (rd == 1)
+                randomNum = r.nextInt((ascii_max_char_min - ascii_min_char_min) + 1) + ascii_min_char_min;
+            if (rd == 2)
+                randomNum = r.nextInt((max_int - min_int) + 1) + min_int;
+            newId += (char) randomNum;
+        }
 
-		return newId;
-	}
+        return newId;
+    }
 }

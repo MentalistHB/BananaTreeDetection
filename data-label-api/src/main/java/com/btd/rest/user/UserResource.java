@@ -1,5 +1,7 @@
 package com.btd.rest.user;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -21,28 +23,28 @@ import com.btd.service.UserService;
 @CrossOrigin(origins = "*")
 public class UserResource {
 
-	@Inject
-	UserService userService;
+    @Inject
+    UserService userService;
 
-	@RequestMapping(method = RequestMethod.GET)
-	@Produces(MediaType.APPLICATION_JSON)
-	public User get(@PathVariable("userId") String userId, @PathVariable("token") String token) {
+    @RequestMapping(method = RequestMethod.GET)
+    @Produces(MediaType.APPLICATION_JSON)
+    public User get(@PathVariable("userId") UUID userId, @PathVariable("token") UUID token) {
 
-		return userService.findOne(userId, token);
-	}
+        return userService.findOne(userId, token);
+    }
 
-	@RequestMapping(method = RequestMethod.PUT)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public User update(@PathVariable("userId") String userId, @PathVariable("token") String token,
-			@RequestBody User user) {
+    @RequestMapping(method = RequestMethod.PUT)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public User update(@PathVariable("userId") UUID userId, @PathVariable("token") UUID token,
+            @RequestBody User user) {
 
-		return userService.update(user, userId, token);
-	}
+        return userService.update(user, userId, token);
+    }
 
-	@RequestMapping(method = RequestMethod.DELETE)
-	public void delete(@PathVariable("userId") String userId, @PathVariable("token") String token) {
+    @RequestMapping(method = RequestMethod.DELETE)
+    public void delete(@PathVariable("userId") UUID userId, @PathVariable("token") UUID token) {
 
-		userService.delete(userId, token);
-	}
+        userService.delete(userId, token);
+    }
 }

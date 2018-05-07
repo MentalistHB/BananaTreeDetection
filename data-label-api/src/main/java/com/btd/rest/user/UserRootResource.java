@@ -1,6 +1,7 @@
 package com.btd.rest.user;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -22,21 +23,21 @@ import com.btd.service.UserService;
 @CrossOrigin(origins = "*")
 public class UserRootResource {
 
-	@Inject
-	UserService userService;
+    @Inject
+    UserService userService;
 
-	@RequestMapping(path = ApiConstant.USER_COLLECTION_PATH, method = RequestMethod.POST)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public User create(@PathVariable("token") String token, @RequestBody User user) {
+    @RequestMapping(path = ApiConstant.USER_COLLECTION_PATH, method = RequestMethod.POST)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public User create(@PathVariable("token") UUID token, @RequestBody User user) {
 
-		return userService.create(user, token);
-	}
+        return userService.create(user, token);
+    }
 
-	@RequestMapping(path = ApiConstant.USER_COLLECTION_PATH, method = RequestMethod.GET)
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<User> list(@PathVariable("token") String token) {
+    @RequestMapping(path = ApiConstant.USER_COLLECTION_PATH, method = RequestMethod.GET)
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<User> list(@PathVariable("token") String token) {
 
-		return userService.list(token);
-	}
+        return userService.list(token);
+    }
 }

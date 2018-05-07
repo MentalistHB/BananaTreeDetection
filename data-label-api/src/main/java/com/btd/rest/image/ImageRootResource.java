@@ -2,6 +2,7 @@ package com.btd.rest.image;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -24,28 +25,28 @@ import com.btd.service.ImageService;
 @CrossOrigin(origins = "*")
 public class ImageRootResource {
 
-	@Inject
-	ImageService imageService;
+    @Inject
+    ImageService imageService;
 
-	@RequestMapping(path = ApiConstant.IMAGE_COLLECTION_PATH, method = RequestMethod.POST)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Image mark(@PathVariable("token") String token, @RequestBody Image image) throws IOException {
+    @RequestMapping(path = ApiConstant.IMAGE_COLLECTION_PATH, method = RequestMethod.POST)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Image mark(@PathVariable("token") UUID token, @RequestBody Image image) throws IOException {
 
-		return imageService.mark(image, token);
-	}
+        return imageService.mark(image, token);
+    }
 
-	@RequestMapping(path = ApiConstant.IMAGE_COLLECTION_PATH, method = RequestMethod.GET)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Image pick(@PathVariable("token") String token) {
+    @RequestMapping(path = ApiConstant.IMAGE_COLLECTION_PATH, method = RequestMethod.GET)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Image pick(@PathVariable("token") UUID token) {
 
-		return imageService.pick_image(token);
-	}
+        return imageService.pickImage(token);
+    }
 
-	@RequestMapping(path = ApiConstant.IMAGE_COLLECTION_PATH + "/all", method = RequestMethod.GET)
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Image> listByCenter(@RequestParam("center") String center, @PathVariable("token") String token) {
+    @RequestMapping(path = ApiConstant.IMAGE_COLLECTION_PATH + "/all", method = RequestMethod.GET)
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Image> listByCenter(@RequestParam("center") String center, @PathVariable("token") UUID token) {
 
-		return imageService.listByCenter(center, token);
-	}
+        return imageService.listByCenter(center, token);
+    }
 }
