@@ -21,7 +21,7 @@ import {ImgMapComponent} from 'ng2-img-map';
 import {StatsComponent} from './stats/stats.component';
 import {ToastyModule} from 'ng2-toasty';
 import {UserEditComponent} from './user-edit/user-edit.component';
-import { ReviewComponent } from './review/review.component';
+import {AnnotationService} from './annotation.service';
 
 
 @NgModule({
@@ -37,8 +37,7 @@ import { ReviewComponent } from './review/review.component';
     UserLogoutComponent,
     ImageComponent,
     ImgMapComponent,
-    StatsComponent,
-    ReviewComponent
+    StatsComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +52,7 @@ import { ReviewComponent } from './review/review.component';
     CommonModule,
     ToastyModule.forRoot()
   ],
-  providers: [UserService, ImageService],
+  providers: [UserService, ImageService, AnnotationService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

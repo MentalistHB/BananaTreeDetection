@@ -39,9 +39,14 @@ export class UserLoginComponent extends LockComponent implements OnInit {
     };
 
     this._userService.login(user).subscribe(responseLogin => {
-        this.user = Object2User.apply(responseLogin);
-        Auth.storeUser(this.user);
-        this._router.navigate(['']);
+        if (responseLogin.status != 200) {
+          this.addToast('Error!', responseLogin.entity, 'error');
+          console.log(responseLogin);
+        } else {
+          this.user = Object2User.apply(responseLogin.entity);
+          Auth.storeUser(this.user);
+          this._router.navigate(['']);
+        }
       },
       responseLoginErrCode => {
         this.addToast('Error!', 'Please check your email and/or password and try again!\n' +

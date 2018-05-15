@@ -16,4 +16,4 @@ detector = Detector(input_path, output_path)
 
 detector.recognize()
 
-detector.mapping(real)
+# detector.mapping(real)

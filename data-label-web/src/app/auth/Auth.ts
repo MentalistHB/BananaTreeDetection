@@ -24,7 +24,7 @@ export class Auth {
   }
 
   public static storeUser(user: User) {
-    sessionStorage.setItem('user.id', user.id);
+    sessionStorage.setItem('user.id', String(user.id));
     sessionStorage.setItem('user.email', user.email);
     sessionStorage.setItem('user.firstname', user.firstname);
     sessionStorage.setItem('user.lastname', user.lastname);
@@ -48,7 +48,7 @@ export class Auth {
     const token = sessionStorage.getItem('user.token');
 
     this.user = {
-      id: id,
+      id: Number(id),
       email: email,
       password: '',
       firstname: firstname,

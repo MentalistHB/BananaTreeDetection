@@ -1,4 +1,6 @@
 data-label-api/target/
+data-label-api/src/main/resources/application.properties
+data-label-api/src/main/resources/static/*
 data-label-api/!.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###

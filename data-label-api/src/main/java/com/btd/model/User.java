@@ -2,21 +2,13 @@ package com.btd.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
@@ -24,33 +16,25 @@ public class User implements Serializable {
 	private static final long serialVersionUID = -3174398959173053637L;
 
 	@Id
-	@GeneratedValue(generator = "uuid2")
-	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(columnDefinition = "uuid")
-	private UUID id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 	private String firstname;
 	private String lastname;
 	@NotEmpty(message = "The email must nut be empty")
 	private String email;
 	private String password;
-	private UUID token;
+	private String token;
 	private Date createAt;
 	private boolean admin;
 
 	@ManyToOne
 	private User creator;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-	private Set<Image> images = new HashSet<>();
-
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<Role> roles;
-
-	public UUID getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -86,14 +70,6 @@ public class User implements Serializable {
 		this.admin = admin;
 	}
 
-	public Set<Image> getImages() {
-		return images;
-	}
-
-	public void setImages(Set<Image> images) {
-		this.images = images;
-	}
-
 	public String getPassword() {
 		return password;
 	}
@@ -102,11 +78,11 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public UUID getToken() {
+	public String getToken() {
 		return token;
 	}
 
-	public void setToken(UUID token) {
+	public void setToken(String token) {
 		this.token = token;
 	}
 
@@ -125,13 +101,4 @@ public class User implements Serializable {
 	public void setCreateAt(Date createAt) {
 		this.createAt = createAt;
 	}
-
-	public List<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
-	}
-
 }

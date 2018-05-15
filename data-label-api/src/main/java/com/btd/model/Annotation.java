@@ -1,46 +1,42 @@
 package com.btd.model;
 
 import java.io.Serializable;
-import java.util.UUID;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class Annotation implements Serializable {
 	private static final long serialVersionUID = 2121369575062788730L;
 
 	@Id
-	@GeneratedValue(generator = "uuid2")
-	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(columnDefinition = "uuid")
-	private UUID id;
-	private boolean isPrimary;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	private boolean principal;
 	private int x;
 	private int y;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Image image;
 
-	public UUID getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public boolean isPrimary() {
-		return isPrimary;
+	public boolean isPrincipal() {
+		return principal;
 	}
 
-	public void setPrimary(boolean isPrimary) {
-		this.isPrimary = isPrimary;
+	public void setPrincipal(boolean principal) {
+		this.principal = principal;
 	}
 
 	public int getX() {

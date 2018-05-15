@@ -1,8 +1,9 @@
 package com.btd;
 
+import java.io.IOException;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 
 import com.btd.model.User;
@@ -10,16 +11,15 @@ import com.btd.repository.UserRepository;
 import com.btd.rest.ApiConstant;
 
 @SpringBootApplication
-@EntityScan("com.btd.model")
 public class BTDRestApiApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		ApplicationContext context = SpringApplication.run(BTDRestApiApplication.class, args);
 
 		UserRepository userRepository = context.getBean(UserRepository.class);
 
-		if (userRepository.findAll().size() == 0) {
+		if (userRepository.findAll().isEmpty()) {
 
 			User admin = new User();
 
@@ -30,7 +30,7 @@ public class BTDRestApiApplication {
 			admin.setAdmin(true);
 			admin.setCreator(null);
 
-			userRepository.save(admin);
+			admin = userRepository.save(admin);
 
 		}
 	}

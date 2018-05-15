@@ -1,21 +1,80 @@
 <div class="row">
   <div class="col-md-1">
     <svg width="5cm" height="1cm" version="1.1"
-         xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
-      <image [attr.xlink:href]="url_image" x="0" y="0" (mouseenter)="onEvent($event)" (click)="pickPixel(clientX, clientY)"
+         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <image [attr.xlink:href]="urlImage" x="0" y="0" (mouseenter)="onEvent($event)"
+             (click)="pickPixel(clientX, clientY)"
              (mouseleave)="onEvent($event)"
              (mousemove)="coordinates($event)"
              on-click="onEvent($event)"
              on-dblclick="onEvent($event)"
              on-contextmenu="onEvent($event)" id="crop"/>
-      <circle [attr.cx]="x_template" [attr.cy]="y_template" [attr.fill]="fill" r="3"/>
+      <circle [attr.cx]="annotations[0].x" [attr.cy]="annotations[0].y" [attr.fill]="fills[0]" r="3"
+              (click)="pickPixel(clientX, clientY)"
+              (mouseleave)="onEvent($event)"
+              (mousemove)="coordinates($event)"/>
+      <circle [attr.cx]="annotations[1].x" [attr.cy]="annotations[1].y" [attr.fill]="fills[1]" r="3"
+              (click)="pickPixel(clientX, clientY)"
+              (mouseleave)="onEvent($event)"
+              (mousemove)="coordinates($event)"/>
+      <circle [attr.cx]="annotations[2].x" [attr.cy]="annotations[2].y" [attr.fill]="fills[2]" r="3"
+              (click)="pickPixel(clientX, clientY)"
+              (mouseleave)="onEvent($event)"
+              (mousemove)="coordinates($event)"/>
+      <circle [attr.cx]="annotations[3].x" [attr.cy]="annotations[3].y" [attr.fill]="fills[3]" r="3"
+              (click)="pickPixel(clientX, clientY)"
+              (mouseleave)="onEvent($event)"
+              (mousemove)="coordinates($event)"/>
+      <circle [attr.cx]="annotations[4].x" [attr.cy]="annotations[4].y" [attr.fill]="fills[4]" r="3"
+              (click)="pickPixel(clientX, clientY)"
+              (mouseleave)="onEvent($event)"
+              (mousemove)="coordinates($event)"/>
+      <circle [attr.cx]="annotations[5].x" [attr.cy]="annotations[5].y" [attr.fill]="fills[5]" r="3"
+              (click)="pickPixel(clientX, clientY)"
+              (mouseleave)="onEvent($event)"
+              (mousemove)="coordinates($event)"/>
+      <circle [attr.cx]="annotations[6].x" [attr.cy]="annotations[6].y" [attr.fill]="fills[6]" r="3"
+              (click)="pickPixel(clientX, clientY)"
+              (mouseleave)="onEvent($event)"
+              (mousemove)="coordinates($event)"/>
+      <circle [attr.cx]="annotations[7].x" [attr.cy]="annotations[7].y" [attr.fill]="fills[7]" r="3"
+              (click)="pickPixel(clientX, clientY)"
+              (mouseleave)="onEvent($event)"
+              (mousemove)="coordinates($event)"/>
     </svg>
-    <p *ngIf="center">center at posotion ({{x_template}},{{y_template}})</p>
-    <p *ngIf="!center">No center!</p>
-    <button class="btn btn-danger" (click)="resetTemplate()" data-toggle="tooltip" data-placement="right" title="Reset to no center">Reset</button>
-    <button class="btn btn-success" (click)="submit()" data-toggle="tooltip" data-placement="right" title="Confirm the selection">Confirm</button>
-    <button class="btn btn-primary" (click)="ngOnInit()" data-toggle="tooltip" data-placement="right" title="Leave this picture and take another one">Pick another image</button>
-    <br/>
+    <p>({{clientX}}, {{clientY}})</p>
+    <button class="btn btn-danger" (click)="resetTemplate()" data-toggle="tooltip" data-placement="right"
+            title="Reset to no center">Reset
+    </button>
+    <button class="btn btn-success" (click)="submit()" data-toggle="tooltip" data-placement="right"
+            title="Confirm the selection">Confirm
+    </button>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>N.</th>
+        <th>X</th>
+        <th>Y</th>
+        <th>Color</th>
+        <th>Principal</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let annotation of annotations; let i = index">
+        <td>{{i + 1}}</td>
+        <td><span *ngIf="isDrawable(annotation.x, annotation.y)">{{annotation.x}}</span></td>
+        <td><span *ngIf="isDrawable(annotation.x, annotation.y)">{{annotation.y}}</span></td>
+        <td>
+          <svg width="0.3cm" height="0.3cm" version="1.1"
+               xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" *ngIf="isDrawable(annotation.x, annotation.y)">
+            <circle [attr.fill]="getColor(i, annotation.principal)" r="20"/>
+          </svg>
+        </td>
+        <td><span class="label label-primary" *ngIf="annotation.principal">Principal</span></td>
+      </tr>
+      </tbody>
+    </table>
+    <p>{{getNbPoints()}} marked!</p>
     <br/>
     <p class="text-justify text-info">
       Please click on <b>"Pick another image"</b> if you can't make a choice.<br/>
@@ -28,9 +87,10 @@
   </div>
   <div class="col-md-push-1 col-md-10" id="image_parent">
     <svg version="1.1" [attr.width]="width_parent" [attr.height]="height_parent"
-         xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" id="image">
-      <image [attr.xlink:href]="url_parent" [attr.width]="width_parent" [attr.height]="height_parent"/>
-      <rect [attr.x]="x" [attr.y]="y" [attr.width]="width" [attr.height]="height" fill="none" stroke="red" stroke-width="2"/>
+         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="image">
+      <image [attr.xlink:href]="pathParent" [attr.width]="width_parent" [attr.height]="height_parent"/>
+      <rect [attr.x]="x" [attr.y]="y" [attr.width]="width" [attr.height]="height" fill="none" stroke="red"
+            stroke-width="2"/>
     </svg>
   </div>
   <ng2-toasty [position]="'bottom-center'"></ng2-toasty>

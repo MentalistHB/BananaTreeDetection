@@ -13,21 +13,16 @@ export class Object2Image {
     this.image = {
       id: object.id,
       center: object.center,
-      x: object.x,
-      y: object.y,
-      x_parent: object.x_parent,
-      y_parent: object.y_parent,
-      width: object.width,
-      height: object.height,
+      xcoordParent: object.xcoordParent,
+      ycoordParent: object.ycoordParent,
       stride: object.stride,
-      parent_local: object.parent_local,
-      parent_remote: object.parent_remote,
-      width_parent: object.width_parent,
-      height_parent: object.height_parent,
+      pathParent: object.pathParent,
+      widthParent: object.widthParent,
+      heightParent: object.heightParent,
       name: object.name,
-      path_local: object.path_local,
-      path_remote: object.path_remote,
+      folder: object.folder,
       markedDate: object.markedDate,
+      annotations: object.annotations,
       user: object.user
     };
 

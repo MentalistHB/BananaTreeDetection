@@ -179,7 +179,7 @@ class Detector:
 
             print('Number of tree = {}'.format(max_param['n_core_samples']))
 
-            plt.plot(x, y, 'r.', markersize=7)
+            plt.plot(x, y, 'r.', markersize=10)
             plt.savefig(
                 os.path.join(self.output_path, 'detection_{}{}{}-{}{}{}_stride-{}_threshold-{}_padding-{}.jpeg'.format(
                     datetime.datetime.now().day,
@@ -190,7 +190,7 @@ class Detector:
                     datetime.datetime.now().second,
                     self.stride,
                     self.threshold,
-                    self.padding)), dpi=900)
+                    self.padding)), dpi=1200)
             plt.show()
 
     def mapping(self, real=None):

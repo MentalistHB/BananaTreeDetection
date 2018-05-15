@@ -11,6 +11,10 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {ImgMapComponent} from 'ng2-img-map';
 import {ToastData, ToastOptions, ToastyService} from 'ng2-toasty';
 import {Observable, Subscription} from 'rxjs/Rx';
+import {Annotation} from '../model/Annotation';
+import has = Reflect.has;
+import {AnnotationService} from '../annotation.service';
+import {MarkedImageTO} from '../model/markedImageTO';
 
 @Component({
   selector: 'app-image',
@@ -27,8 +31,8 @@ export class ImageComponent extends LockComponent implements OnInit {
   markedImage: Image;
   user: User;
   server: string;
-  url_image: string;
-  url_parent: string;
+  urlImage: string;
+  pathParent: string;
   event: MouseEvent;
   clientX = 0;
   clientY = 0;
@@ -40,41 +44,58 @@ export class ImageComponent extends LockComponent implements OnInit {
   width: number;
   height: number;
 
-  Math: any;
-
-  fill = 'none';
-  x_template = 0;
-  y_template = 0;
+  fills = ['none',
+    'none',
+    'none',
+    'none',
+    'none',
+    'none',
+    'none',
+    'none'];
   center = false;
 
+  annotations: Annotation[] = [new Annotation(-1, -1, false),
+    new Annotation(-1, -1, false),
+    new Annotation(-1, -1, false),
+    new Annotation(-1, -1, false),
+    new Annotation(-1, -1, false),
+    new Annotation(-1, -1, false),
+    new Annotation(-1, -1, false),
+    new Annotation(-1, -1, false)];
 
-  constructor(public _imageService: ImageService, public route: ActivatedRoute,
+  constructor(public _imageService: ImageService, public _annotationService: AnnotationService, public route: ActivatedRoute,
               public router: Router, private toastyService: ToastyService) {
     super(route, router);
 
-    this.server = AppConstant.server_file;
+    this.server = AppConstant.server;
     this.user = Auth.getUser();
   }
 
   ngOnInit() {
-    this.pick(this.user.token);
-    this.fill = 'none';
-    this.x_template = 0;
-    this.y_template = 0;
+    this.pick(this.user.id);
     this.center = false;
   }
 
-  pick(token: string) {
-    this._imageService.pick(token).subscribe(responsePick => {
-        this.image = Object2Image.apply(responsePick);
-        this.url_image = this.server + this.image.path_remote;
-        this.url_parent = this.server + this.image.parent_remote;
-        this.width_parent = this.image.width_parent;
-        this.height_parent = this.image.height_parent;
-        this.x = this.image.x_parent;
-        this.y = this.image.y_parent;
-        this.width = this.image.width;
-        this.height = this.image.height;
+  pick(userId: number) {
+    this._imageService.pick(userId).subscribe(responsePick => {
+        if (responsePick.status != 403 || responsePick.status == 500) {
+          this.lock();
+          this.addToast('Error', responsePick.entity, 'error');
+        }
+        if (responsePick.status != 200) {
+          this.addToast('Error', responsePick.entity, 'error');
+        } else {
+          this.resetTemplate();
+          this.image = Object2Image.apply(responsePick.entity);
+          this.urlImage = this.server + '/' + this.image.folder + this.image.name;
+          this.pathParent = this.server + '/' + this.image.pathParent;
+          this.width_parent = this.image.widthParent;
+          this.height_parent = this.image.heightParent;
+          this.x = this.image.xcoordParent;
+          this.y = this.image.ycoordParent;
+          this.width = AppConstant.template_width;
+          this.height = AppConstant.template_height;
+        }
       },
       responseLoginErrCode => {
         this.addToast('Error', responseLoginErrCode.error, 'error');
@@ -87,45 +108,89 @@ export class ImageComponent extends LockComponent implements OnInit {
   }
 
   coordinates(event: MouseEvent): void {
-    this.clientX = event.clientX;
-    this.clientY = event.clientY;
+    this.clientX = event.pageX;
+    this.clientY = event.pageY;
   }
 
   pickPixel(xPicked: number, yPicked: number) {
-    this.fill = 'red';
-    this.x_template = xPicked;
-    this.y_template = yPicked;
-    this.center = true;
+
+    const i = this.contains(xPicked, yPicked);
+    const nbPoints = this.getNbPoints();
+
+    if ((nbPoints < AppConstant.max_annotation && i !== -1) || (nbPoints >= AppConstant.max_annotation && i !== -1)) {
+      for (const annotation of this.annotations) {
+        this.annotations[i].x = -1;
+        this.annotations[i].y = -1;
+        this.annotations[i].principal = false;
+        this.setPrincipal();
+        this.updateColors();
+
+        if (this.getNbPoints() === 0) {
+          this.center = false;
+        } else {
+          this.center = true;
+        }
+      }
+    } else {
+      if (nbPoints < AppConstant.max_annotation && i === -1) {
+        let j = -1;
+        for (const annotation of this.annotations) {
+          j += 1;
+          if (annotation.x === -1 && annotation.y === -1) {
+            this.annotations[j].x = xPicked;
+            this.annotations[j].y = yPicked;
+            this.annotations[j].principal = (nbPoints === 0);
+            this.center = true;
+            this.setPrincipal();
+            this.updateColors();
+            return;
+          }
+        }
+      } else {
+        return;
+      }
+    }
   }
 
 
   submit() {
     const markedImage = {
-      id: '',
+      id: 0,
       center: this.center,
-      x: this.x_template,
-      y: this.y_template,
-      x_parent: this.image.x_parent,
-      y_parent: this.image.y_parent,
-      width: this.image.width,
-      height: this.image.height,
+      xcoordParent: this.image.xcoordParent,
+      ycoordParent: this.image.ycoordParent,
       stride: this.image.stride,
-      parent_local: this.image.parent_local,
-      parent_remote: this.image.parent_remote,
-      width_parent: this.image.width_parent,
-      height_parent: this.image.height_parent,
+      pathParent: this.image.pathParent,
+      widthParent: this.image.widthParent,
+      heightParent: this.image.heightParent,
       name: this.image.name,
-      path_local: this.image.path_local,
-      path_remote: this.image.path_remote,
+      folder: this.image.folder,
       markedDate: this.image.markedDate,
       user: null
     };
 
-    this._imageService.mark(markedImage, this.user.token).subscribe(responseMark => {
-        this.markedImage = Object2Image.apply(responseMark);
+    let annotations: Annotation[] = [];
+    for (const annotation of this.annotations) {
+      if (annotation.isMarked()) {
+        annotations.push(annotation);
+      }
+    }
 
-        this.addToast('Success', 'Class registered', 'success');
-        this.ngOnInit();
+    let to = new MarkedImageTO(markedImage, annotations);
+
+    this._imageService.save(to, this.user.id, this.user.token).subscribe(responseMark => {
+        if (responseMark.status != 403 || responseMark.status == 500) {
+          this.lock();
+          this.addToast('Error', responseMark.entity, 'error');
+        }
+        if (responseMark.status != 200) {
+          this.addToast('Error', responseMark.entity, 'error');
+          this.ngOnInit();
+        } else {
+          this.markedImage = Object2Image.apply(responseMark.entity);
+          this.addToast('Success', 'Class registered', 'success');
+          this.ngOnInit();
+        }
       },
       responseLoginErrCode => {
         console.log(responseLoginErrCode);
@@ -186,9 +251,118 @@ export class ImageComponent extends LockComponent implements OnInit {
   }
 
   resetTemplate() {
-    this.fill = 'none';
-    this.x_template = 0;
-    this.y_template = 0;
+    this.fills = ['none',
+      'none',
+      'none',
+      'none',
+      'none',
+      'none',
+      'none',
+      'none'];
+
+    this.annotations = [new Annotation(-1, -1, false),
+      new Annotation(-1, -1, false),
+      new Annotation(-1, -1, false),
+      new Annotation(-1, -1, false),
+      new Annotation(-1, -1, false),
+      new Annotation(-1, -1, false),
+      new Annotation(-1, -1, false),
+      new Annotation(-1, -1, false)];
     this.center = false;
+  }
+
+  contains(x: number, y: number): number {
+    let i = -1;
+    for (const annotation of this.annotations) {
+      i += 1;
+      if (annotation.x === x && annotation.y === y) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  getNbPoints() {
+    let nbPoints = 0;
+    for (const annotation of this.annotations) {
+      if (annotation.x !== -1 && annotation.y !== -1) {
+        nbPoints += 1;
+      }
+    }
+    return nbPoints;
+  }
+
+  getColor(index: number, principal: boolean): string {
+    if (principal) {
+      return 'red';
+    } else {
+      switch (index) {
+        case 0: {
+          return 'Blue';
+        }
+        case 1: {
+          return 'Silver';
+        }
+        case 2: {
+          return 'Orange';
+        }
+        case 3: {
+          return 'Yellow';
+        }
+        case 4: {
+          return 'Pink';
+        }
+        case 5: {
+          return 'Cyan';
+        }
+        case 6: {
+          return 'Magenta';
+        }
+        case 7: {
+          return 'BlueViolet';
+        }
+      }
+    }
+  }
+
+  isDrawable(x: number, y: number) {
+    if (x === -1 || y === -1) {
+      return false;
+    }
+    return true;
+  }
+
+  setPrincipal() {
+    let hasPrincipal = false;
+    for (const annotation of this.annotations) {
+      if (annotation.principal) {
+        hasPrincipal = true;
+        break;
+      }
+    }
+
+    if (!hasPrincipal) {
+      let j = -1;
+      for (const annotation of this.annotations) {
+        j += 1;
+        if (annotation.x !== -1 && annotation.y !== -1) {
+          this.annotations[j].principal = true;
+          break;
+        }
+      }
+    }
+  }
+
+  updateColors() {
+    let i = 0;
+    for (const annotation of this.annotations) {
+      if (annotation.x !== -1 && annotation.y !== -1) {
+        this.fills[i] = this.getColor(i, annotation.principal);
+      } else {
+        this.fills[i] = 'none';
+      }
+      i += 1;
+    }
   }
 }

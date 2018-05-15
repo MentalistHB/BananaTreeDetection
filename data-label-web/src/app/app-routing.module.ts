@@ -8,7 +8,6 @@ import {UserLogoutComponent} from './user-logout/user-logout.component';
 import {ImageComponent} from './image/image.component';
 import {StatsComponent} from './stats/stats.component';
 import {UserEditComponent} from './user-edit/user-edit.component';
-import {ReviewComponent} from './review/review.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -18,7 +17,6 @@ const routes: Routes = [
   {path: 'users/form', component: UserFormComponent},
   {path: 'users/stats', component: StatsComponent},
   {path: 'users/:id', component: UserEditComponent},
-  {path: 'users/review/:id', component: ReviewComponent},
   {path: 'images', component: ImageComponent}
 ];
 
@@ -38,6 +36,5 @@ export const routingComponents =
     UserFormComponent,
     UserEditComponent,
     ImageComponent,
-    StatsComponent,
-    ReviewComponent
+    StatsComponent
   ];
