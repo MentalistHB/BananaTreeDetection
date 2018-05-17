@@ -39,15 +39,23 @@ export class UserEditComponent extends LockComponent implements OnInit {
     });
 
     this._userService.get(this.userId, this.user.token).subscribe(responseGetUser => {
-        this.userToEdit = Object2User.apply(responseGetUser);
+        if (responseGetUser.status === 403 || responseGetUser.status === 500) {
+          this.lock();
+          this.addToast('Error', responseGetUser.entity, 'error');
+        }
+        if (responseGetUser.status !== 200) {
+          this.addToast('Error', responseGetUser.entity, 'error');
+        } else {
+          this.userToEdit = Object2User.apply(responseGetUser.entity);
 
-        this.userEditForm = this._formBuilder.group({
-          email: [this.userToEdit.email, [Validators.required, Validators.pattern('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]' +
-            '(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$')]],
-          firstname: [this.userToEdit.firstname],
-          lastname: [this.userToEdit.lastname],
-          admin: [this.userToEdit.admin]
-        });
+          this.userEditForm = this._formBuilder.group({
+            email: [this.userToEdit.email, [Validators.required, Validators.pattern('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]' +
+              '(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$')]],
+            firstname: [this.userToEdit.firstname],
+            lastname: [this.userToEdit.lastname],
+            admin: [this.userToEdit.admin]
+          });
+        }
 
       },
       responseLoginErrCode => {
@@ -64,17 +72,25 @@ export class UserEditComponent extends LockComponent implements OnInit {
     };
 
     this._userService.edit(user, this.userToEdit.id, this.user.token).subscribe(responseEditUser => {
-        this.userToEdit = Object2User.apply(responseEditUser);
+        if (responseEditUser.status === 403 || responseEditUser.status === 500) {
+          this.lock();
+          this.addToast('Error', responseEditUser.entity, 'error');
+        }
+        if (responseEditUser.status !== 200) {
+          this.addToast('Error', responseEditUser.entity, 'error');
+        } else {
+          this.userToEdit = Object2User.apply(responseEditUser.entity);
 
-        this.addToast('Success!', 'The user ' + this.userToEdit.email + ' has been updated.', 'success');
+          this.addToast('Success!', 'The user ' + this.userToEdit.email + ' has been updated.', 'success');
 
-        this.userEditForm = this._formBuilder.group({
-          email: [this.userToEdit.email, [Validators.required, Validators.pattern('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]' +
-            '(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$')]],
-          firstname: [this.userToEdit.firstname],
-          lastname: [this.userToEdit.lastname],
-          admin: [this.userToEdit.admin]
-        });
+          this.userEditForm = this._formBuilder.group({
+            email: [this.userToEdit.email, [Validators.required, Validators.pattern('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]' +
+              '(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$')]],
+            firstname: [this.userToEdit.firstname],
+            lastname: [this.userToEdit.lastname],
+            admin: [this.userToEdit.admin]
+          });
+        }
       },
       responseLoginErrCode => {
         this.addToast('Error!', 'The user ' + this.userEditForm.value.email + ' couldn\'t been updated.', 'error');
@@ -136,7 +152,7 @@ export class UserEditComponent extends LockComponent implements OnInit {
     }
   }
 
-  review(userId){
+  review(userId) {
     this.router.navigate(['/users/review', userId]);
   }
 

@@ -16,10 +16,9 @@ import {ToastData, ToastOptions, ToastyService} from 'ng2-toasty';
 })
 export class UserComponent extends LockComponent implements OnInit {
 
-  title: string;
   userCreateForm: FormGroup;
   user: User;
-  users: any;
+  users: any[];
   admin = false;
   createdUser: User;
 
@@ -40,7 +39,14 @@ export class UserComponent extends LockComponent implements OnInit {
     });
 
     this._userService.list(this.user.token).subscribe(responseListUser => {
-        this.users = responseListUser;
+        if (responseListUser.status === 403 || responseListUser.status === 500) {
+          this.addToast('Error', responseListUser.entity, 'error');
+        }
+        if (responseListUser.status !== 200) {
+          this.addToast('Error', responseListUser.entity, 'error');
+        } else {
+          this.users = responseListUser.entity;
+        }
       },
       responseLoginErrCode => {
         console.log(responseLoginErrCode);
@@ -56,16 +62,25 @@ export class UserComponent extends LockComponent implements OnInit {
     };
 
     this._userService.create(user, this.user.token).subscribe(responseCreateUser => {
-        this.createdUser = Object2User.apply(responseCreateUser);
 
-        this.addToast('Success!', 'The user ' + this.createdUser.email + ' has been created.', 'success');
+        if (responseCreateUser.status === 403 || responseCreateUser.status === 500) {
+          this.lock();
+          this.addToast('Error', responseCreateUser.entity, 'error');
+        }
+        if (responseCreateUser.status !== 200) {
+          this.addToast('Error', responseCreateUser.entity, 'error');
+        } else {
+          this.createdUser = Object2User.apply(responseCreateUser.entity);
 
-        this.userCreateForm = this._formBuilder.group({
-          email: ['', [Validators.required, Validators.minLength(5)]],
-          firstname: [''],
-          lastname: [''],
-          admin: [false]
-        });
+          this.addToast('Success!', 'The user ' + this.createdUser.email + ' has been created.', 'success');
+
+          this.userCreateForm = this._formBuilder.group({
+            email: ['', [Validators.required, Validators.minLength(5)]],
+            firstname: [''],
+            lastname: [''],
+            admin: [false]
+          });
+        }
       },
       responseLoginErrCode => {
         this.addToast('Error!', 'The user ' + this.userCreateForm.value.email + ' couldn\'t been created.', 'error');

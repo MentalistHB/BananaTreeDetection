@@ -49,7 +49,7 @@
     <button class="btn btn-success" (click)="submit()" data-toggle="tooltip" data-placement="right"
             title="Confirm the selection">Confirm
     </button>
-    <table class="table">
+    <table class="table table-hover">
       <thead>
       <tr>
         <th>N.</th>
@@ -57,10 +57,11 @@
         <th>Y</th>
         <th>Color</th>
         <th>Principal</th>
+        <th></th>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let annotation of annotations; let i = index">
+      <tr *ngFor="let annotation of annotations; let i = index" (click)="setAsPrincipal(i)">
         <td>{{i + 1}}</td>
         <td><span *ngIf="isDrawable(annotation.x, annotation.y)">{{annotation.x}}</span></td>
         <td><span *ngIf="isDrawable(annotation.x, annotation.y)">{{annotation.y}}</span></td>
@@ -71,6 +72,7 @@
           </svg>
         </td>
         <td><span class="label label-primary" *ngIf="annotation.principal">Principal</span></td>
+        <td (click)="remove(i)"><span class="glyphicon glyphicon-remove" *ngIf="isDrawable(annotation.x, annotation.y)" style="color: red;"></span></td>
       </tr>
       </tbody>
     </table>

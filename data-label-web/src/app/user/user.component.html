@@ -4,7 +4,7 @@
     <ng2-toasty [position]="'top-center'"></ng2-toasty>
   </div>
   <ul class="nav nav-tabs">
-    <li *ngIf="user.admin"><a data-toggle="tab" href="#list">List <span class="badge">{{ users.length }}</span></a></li>
+    <li *ngIf="user.admin"><a data-toggle="tab" href="#list">List <span class="badge">{{ users?.length }}</span></a></li>
     <li *ngIf="user.admin"><a data-toggle="tab" href="#create">Create</a></li>
     <li class="active"><a data-toggle="tab" href="#profile">Profile</a></li>
   </ul>
@@ -59,10 +59,10 @@
     <div id="profile" class="tab-pane fade in active">
       <h3>Profile</h3>
       <div class="list-group">
-        <a href="#" class="list-group-item">Email: <span class="badge">{{ user.email }}</span></a>
-        <a href="#" class="list-group-item">Firstname <span class="badge">{{ user.firstname }}</span></a>
-        <a href="#" class="list-group-item">Lastname <span class="badge">{{ user.lastname }}</span></a>
-        <a href="#" class="list-group-item">Admin: <span class="badge">{{ user.admin }}</span></a>
+        <a class="list-group-item">Email: <span class="badge">{{ user.email }}</span></a>
+        <a class="list-group-item">Firstname <span class="badge">{{ user.firstname }}</span></a>
+        <a class="list-group-item">Lastname <span class="badge">{{ user.lastname }}</span></a>
+        <a class="list-group-item">Admin: <span class="badge">{{ user.admin }}</span></a>
       </div>
     </div>
 </div>

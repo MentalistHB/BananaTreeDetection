@@ -78,11 +78,11 @@ export class ImageComponent extends LockComponent implements OnInit {
 
   pick(userId: number) {
     this._imageService.pick(userId).subscribe(responsePick => {
-        if (responsePick.status != 403 || responsePick.status == 500) {
+        if (responsePick.status === 403 || responsePick.status === 500) {
           this.lock();
           this.addToast('Error', responsePick.entity, 'error');
         }
-        if (responsePick.status != 200) {
+        if (responsePick.status !== 200) {
           this.addToast('Error', responsePick.entity, 'error');
         } else {
           this.resetTemplate();
@@ -179,11 +179,11 @@ export class ImageComponent extends LockComponent implements OnInit {
     let to = new MarkedImageTO(markedImage, annotations);
 
     this._imageService.save(to, this.user.id, this.user.token).subscribe(responseMark => {
-        if (responseMark.status != 403 || responseMark.status == 500) {
+        if (responseMark.status === 403 || responseMark.status === 500) {
           this.lock();
           this.addToast('Error', responseMark.entity, 'error');
         }
-        if (responseMark.status != 200) {
+        if (responseMark.status !== 200) {
           this.addToast('Error', responseMark.entity, 'error');
           this.ngOnInit();
         } else {
@@ -354,6 +354,26 @@ export class ImageComponent extends LockComponent implements OnInit {
     }
   }
 
+  setAsPrincipal(i: number) {
+    if (this.annotations[i].x !== -1 && this.annotations[i].y !== -1) {
+      for (const annotation of this.annotations) {
+        if (annotation.principal) {
+          annotation.principal = false;
+          this.annotations[i].principal = true;
+          this.setPrincipal();
+          this.updateColors();
+
+          if (this.getNbPoints() === 0) {
+            this.center = false;
+          } else {
+            this.center = true;
+          }
+          break;
+        }
+      }
+    }
+  }
+
   updateColors() {
     let i = 0;
     for (const annotation of this.annotations) {
@@ -363,6 +383,20 @@ export class ImageComponent extends LockComponent implements OnInit {
         this.fills[i] = 'none';
       }
       i += 1;
+    }
+  }
+
+  remove(i: number) {
+    this.annotations[i].x = -1;
+    this.annotations[i].y = -1;
+    this.annotations[i].principal = false;
+    this.setPrincipal();
+    this.updateColors();
+
+    if (this.getNbPoints() === 0) {
+      this.center = false;
+    } else {
+      this.center = true;
     }
   }
 }
